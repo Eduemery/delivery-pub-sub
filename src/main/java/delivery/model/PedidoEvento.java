@@ -3,13 +3,13 @@ package delivery.model;
 import java.time.LocalDateTime;
 
 public class PedidoEvento {
-    private Pedido pedido;
+    private String numeroPedido;
     private LocalDateTime horaEvento;
     private String mensagemEvento;
     private TipoEvento evento;
 
     public PedidoEvento(Pedido pedido, String mensagem, TipoEvento evento){
-        this.pedido = pedido;
+        this.numeroPedido = pedido.getNumero();
         this.horaEvento = LocalDateTime.now();
         this.mensagemEvento = mensagem;
         this.evento = evento;
@@ -18,5 +18,13 @@ public class PedidoEvento {
     public TipoEvento getEvento(){
         return this.evento;
     }
-
+    public String getNumeroPedido(){
+        return this.numeroPedido;
+    }
+    public LocalDateTime getHoraEvento(){
+        return this.horaEvento;
+    }
+    public String getMensagemEvento(){
+        return this.mensagemEvento;
+    }
 }

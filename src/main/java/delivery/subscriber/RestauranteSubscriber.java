@@ -3,10 +3,17 @@ package delivery.subscriber;
 import delivery.model.PedidoEvento;
 import delivery.model.TipoEvento;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 
 public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
+
+    public CountDownLatch latch;
+
+    public RestauranteSubscriber(CountDownLatch latch){
+        this.latch = latch;
+    }
 
     @Override
     public void onSubscribe(Subscription subscription) {
@@ -23,10 +30,12 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
     @Override
     public void onError(Throwable throwable) {
         throwable.printStackTrace();
+        this.latch.countDown();
     }
 
     @Override
     public void onComplete() {
         System.out.println("Comunicação encerrada");
+        this.latch.countDown();
     }
 }

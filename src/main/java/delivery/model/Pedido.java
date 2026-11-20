@@ -45,16 +45,13 @@ public class Pedido {
     public void setStatus(PedidoEvento status) {
         this.status = status;
     }
-
-    public void calculaValorTotal(){
-        for(Produto i : this.itens){
-            this.valorTotal += i.getValorTotal();
-        }
+    public void setValorTotal(Double valorTotal){
+        this.valorTotal = valorTotal;
     }
 
     @Override
     public String toString(){
-        return "Pedido: " + getNumero() + "no valor de: " + getValorTotal() + "criado em: " + getEmissao();
+        return "Pedido: " + getNumero() + " no valor de: " + getValorTotal() + " criado em: " + getEmissao();
     }
 
 }
