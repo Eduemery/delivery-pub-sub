@@ -50,7 +50,7 @@ Git.
 
 
 
-1\. Clonar o repositório: git clone https://github.com/SEU-USUARIO/delivery-pub-sub.git
+1\. Clonar o repositório: git clone https://github.com/Eduemery/delivery-pub-sub.git
 
 
 
