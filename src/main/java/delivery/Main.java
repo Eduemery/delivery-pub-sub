@@ -4,11 +4,10 @@ import delivery.model.CalculadoraPedido;
 import delivery.model.Cliente;
 import delivery.model.Endereco;
 import delivery.model.Pedido;
-import delivery.model.PedidoEmPreparacao;
-import delivery.model.PedidoEntregue;
-import delivery.model.PedidoSaiuEntrega;
 import delivery.model.Produto;
+import delivery.model.SituacaoPedido;
 import delivery.publisher.PedidoPublisher;
+import delivery.service.PedidoEventoService;
 import delivery.subscriber.ClienteSubscriber;
 import delivery.subscriber.EntregadorSubscriber;
 import delivery.subscriber.RestauranteSubscriber;
@@ -35,19 +34,22 @@ public class Main {
         Produto item1 = new Produto("PIZZA", 1, 79.99);
         Produto item2 = new Produto("REFRIGERANTE LATA", 1, 9.00);
         List<Produto> itens = List.of(item1, item2);
-        Pedido pedido1 = new Pedido("PEDIDO 1", LocalDateTime.now(), cliente, endereco, itens);
+        Pedido pedido1 = new Pedido("1", LocalDateTime.now(), cliente, endereco, itens);
         CalculadoraPedido calculadoraPedido = new CalculadoraPedido();
         pedido1.setValorTotal(calculadoraPedido.calcular(pedido1));
+        PedidoEventoService pedidoEventoService = new PedidoEventoService();
         System.out.println(pedido1.toString());
 
 
-        publisher.publicarEvento(pedido1.getStatus());
-        pedido1.setStatus(new PedidoEmPreparacao(pedido1));
-        publisher.publicarEvento(pedido1.getStatus());
-        pedido1.setStatus(new PedidoSaiuEntrega(pedido1));
-        publisher.publicarEvento(pedido1.getStatus());
-        pedido1.setStatus(new PedidoEntregue(pedido1));
-        publisher.publicarEvento(pedido1.getStatus());
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
+        pedido1.setStatus(SituacaoPedido.PEDIDO_EM_PREPARACAO);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
+        pedido1.setStatus(SituacaoPedido.PEDIDO_PRONTO_RETIRADA);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
+        pedido1.setStatus(SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
+        pedido1.setStatus(SituacaoPedido.PEDIDO_ENTREGUE);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
         publisher.close();
 
         try {

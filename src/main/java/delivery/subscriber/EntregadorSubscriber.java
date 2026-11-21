@@ -22,8 +22,8 @@ public class EntregadorSubscriber implements Subscriber<PedidoEvento> {
 
     @Override
     public void onNext(PedidoEvento evento) {
-        if(evento.getEvento() == TipoEvento.PEDIDO_ENTREGUE){
-            System.out.println("Entregador recebeu " + evento);
+        if(evento.getEvento() == TipoEvento.PREPARACAO_FINALIZADA){
+            System.out.println("Entregador recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }
 
@@ -35,7 +35,7 @@ public class EntregadorSubscriber implements Subscriber<PedidoEvento> {
 
     @Override
     public void onComplete() {
-        System.out.println("Comunicação encerrada");
+        System.out.println("Comunicação encerrada com o entregador");
         this.latch.countDown();
     }
 }

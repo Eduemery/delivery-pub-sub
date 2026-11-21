@@ -10,7 +10,7 @@ public class Pedido {
     private Double valorTotal;
     private Endereco enderecoEntrega;
     private List<Produto> itens;
-    private PedidoEvento status;
+    private SituacaoPedido status;
 
     public Pedido(String numero, LocalDateTime emissao, Cliente cliente, Endereco enderecoEntrega, List<Produto> itens){
         this.numero = numero;
@@ -18,7 +18,7 @@ public class Pedido {
         this.cliente = cliente;
         this.enderecoEntrega = enderecoEntrega;
         this.itens = itens;
-        this.status = new PedidoCriado(this);
+        this.status = SituacaoPedido.PEDIDO_REALIZADO;
     }
 
     public String getNumero(){
@@ -39,10 +39,10 @@ public class Pedido {
     public List<Produto> getItens(){
         return this.itens;
     }
-    public PedidoEvento getStatus() {
+    public SituacaoPedido getStatus() {
         return status;
     }
-    public void setStatus(PedidoEvento status) {
+    public void setStatus(SituacaoPedido status) {
         this.status = status;
     }
     public void setValorTotal(Double valorTotal){

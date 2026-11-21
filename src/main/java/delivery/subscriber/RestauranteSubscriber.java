@@ -22,8 +22,8 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
 
     @Override
     public void onNext(PedidoEvento evento) {
-        if(evento.getEvento() == TipoEvento.PEDIDO_CRIADO || evento.getEvento() == TipoEvento.PEDIDO_ENTREGUE){
-            System.out.println("Restaurante recebeu " + evento);
+        if(evento.getEvento() == TipoEvento.NOVO_PEDIDO || evento.getEvento() == TipoEvento.ENTREGA_CONCLUIDA || evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
+            System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }
 
@@ -35,7 +35,7 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
 
     @Override
     public void onComplete() {
-        System.out.println("Comunicação encerrada");
+        System.out.println("Comunicação encerrada com o restaurante");
         this.latch.countDown();
     }
 }
