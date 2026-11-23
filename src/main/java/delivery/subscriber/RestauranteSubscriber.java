@@ -2,6 +2,7 @@ package delivery.subscriber;
 
 import delivery.model.PedidoEvento;
 import delivery.model.TipoEvento;
+import delivery.service.PedidoService;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow.Subscriber;
@@ -10,9 +11,11 @@ import java.util.concurrent.Flow.Subscription;
 public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
 
     private CountDownLatch latch;
+    private PedidoService pedidoService;
 
-    public RestauranteSubscriber(CountDownLatch latch){
+    public RestauranteSubscriber(CountDownLatch latch, PedidoService pedidoService){
         this.latch = latch;
+        this.pedidoService = pedidoService;
     }
 
     @Override
@@ -22,7 +25,19 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
 
     @Override
     public void onNext(PedidoEvento evento) {
-        if(evento.getEvento() == TipoEvento.NOVO_PEDIDO || evento.getEvento() == TipoEvento.ENTREGA_CONCLUIDA || evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
+        if(evento.getEvento() == TipoEvento.NOVO_PEDIDO){
+            System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
+            pedidoService.aceitarPedido();
+        }
+        if(evento.getEvento() == TipoEvento.PEDIDO_ACEITO_RESTAURANTE){
+            pedidoService.concluirPrearacao();
+        }
+
+        if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
+            System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
+        }
+
+        if (evento.getEvento() == TipoEvento.ENTREGA_CONCLUIDA){
             System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }

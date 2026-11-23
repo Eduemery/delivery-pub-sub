@@ -2,6 +2,7 @@ package delivery.subscriber;
 
 import delivery.model.PedidoEvento;
 import delivery.model.TipoEvento;
+import delivery.service.PedidoService;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow.Subscriber;
@@ -22,7 +23,11 @@ public class ClienteSubscriber implements Subscriber<PedidoEvento> {
 
     @Override
     public void onNext(PedidoEvento evento) {
-        if(evento.getEvento() == TipoEvento.PEDIDO_ACEITO_RESTAURANTE || evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
+        if(evento.getEvento() == TipoEvento.PEDIDO_ACEITO_RESTAURANTE){
+            System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
+        }
+
+        if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
             System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }

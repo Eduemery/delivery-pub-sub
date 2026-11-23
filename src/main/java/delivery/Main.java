@@ -21,13 +21,6 @@ public class Main {
 
         CountDownLatch latch = new CountDownLatch(3);
         PedidoPublisher publisher = new PedidoPublisher();
-        RestauranteSubscriber restauranteSubscriber = new RestauranteSubscriber(latch);
-        EntregadorSubscriber entregadorSubscriber = new EntregadorSubscriber(latch);
-        ClienteSubscriber clienteSubscriber = new ClienteSubscriber(latch);
-
-        publisher.subscribe(restauranteSubscriber);
-        publisher.subscribe(entregadorSubscriber);
-        publisher.subscribe(clienteSubscriber);
 
         Cliente cliente = new Cliente("EDUARDO EMERY");
         Endereco endereco = new Endereco("BRASIL", "ESPÍRITO SANTO", "ALEGRE", "29500-000", "CENTRO", "RUA PADRE ANCHIETA", 165);
@@ -35,20 +28,28 @@ public class Main {
         Produto item2 = new Produto("REFRIGERANTE LATA", 1, 9.00);
         List<Produto> itens = List.of(item1, item2);
         Pedido pedido1 = new Pedido("1", LocalDateTime.now(), cliente, endereco, itens);
+
         CalculadoraPedido calculadoraPedido = new CalculadoraPedido();
         pedido1.setValorTotal(calculadoraPedido.calcular(pedido1));
+
         PedidoEventoService pedidoEventoService = new PedidoEventoService();
-        PedidoService pedidoService = new PedidoService();
+        PedidoService pedidoService = new PedidoService(pedido1, publisher, pedidoEventoService);
+
+        RestauranteSubscriber restauranteSubscriber = new RestauranteSubscriber(latch, pedidoService);
+        EntregadorSubscriber entregadorSubscriber = new EntregadorSubscriber(latch, pedidoService);
+        ClienteSubscriber clienteSubscriber = new ClienteSubscriber(latch);
+
+        publisher.subscribe(restauranteSubscriber);
+        publisher.subscribe(entregadorSubscriber);
+        publisher.subscribe(clienteSubscriber);
         System.out.println(pedido1.toString());
 
-        pedidoService.alterarSitucaoPedido(pedido1, publisher, pedidoEventoService);
-        publisher.close();
+        pedidoService.novoPedido();
 
         try {
             latch.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
     }
 }
