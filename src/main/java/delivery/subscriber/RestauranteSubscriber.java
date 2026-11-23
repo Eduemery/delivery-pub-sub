@@ -9,7 +9,7 @@ import java.util.concurrent.Flow.Subscription;
 
 public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
 
-    public CountDownLatch latch;
+    private CountDownLatch latch;
 
     public RestauranteSubscriber(CountDownLatch latch){
         this.latch = latch;

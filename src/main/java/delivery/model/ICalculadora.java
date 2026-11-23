@@ -1,5 +1,5 @@
 package delivery.model;
 
-public interface Calculadora {
+public interface ICalculadora {
     public Double calcular(Pedido pedido);
 }

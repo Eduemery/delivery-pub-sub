@@ -1,29 +1,47 @@
 package delivery.service;
 
 import delivery.model.Pedido;
-import delivery.model.PedidoAceitoEvento;
-import delivery.model.PedidoEntregaConcluidaEvento;
-import delivery.model.PedidoEntregaEmAndamentoEvento;
+import delivery.model.PedidoAceitoEventoFactory;
+import delivery.model.PedidoEntregaConcluidaEventoFactory;
+import delivery.model.PedidoEntregaEmAndamentoEventoFactory;
 import delivery.model.PedidoEvento;
-import delivery.model.PedidoNovoEvento;
-import delivery.model.PedidoPreparadoEvento;
+import delivery.model.IPedidoEventoFactory;
+import delivery.model.PedidoNovoEventoFactory;
+import delivery.model.PedidoPreparadoEventoFactory;
 import delivery.model.SituacaoPedido;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PedidoEventoService {
+    private Map<SituacaoPedido, IPedidoEventoFactory> factories;
+
+    public PedidoEventoService(){
+        factories = new HashMap<>();
+
+        factories.put(
+                SituacaoPedido.PEDIDO_REALIZADO,
+                new PedidoNovoEventoFactory()
+        );
+        factories.put(
+                SituacaoPedido.PEDIDO_EM_PREPARACAO,
+                new PedidoAceitoEventoFactory()
+        );
+        factories.put(
+                SituacaoPedido.PEDIDO_PRONTO_RETIRADA,
+                new PedidoPreparadoEventoFactory()
+        );
+        factories.put(
+                SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA,
+                new PedidoEntregaEmAndamentoEventoFactory()
+        );
+        factories.put(
+                SituacaoPedido.PEDIDO_ENTREGUE,
+                new PedidoEntregaConcluidaEventoFactory()
+        );
+    }
 
     public PedidoEvento alterarEvento(Pedido pedido){
-        PedidoEvento evento = null;
-        if(pedido.getStatus() == SituacaoPedido.PEDIDO_REALIZADO){
-            evento = new PedidoNovoEvento(pedido);
-        } else if(pedido.getStatus() == SituacaoPedido.PEDIDO_EM_PREPARACAO){
-            evento = new PedidoAceitoEvento(pedido);
-        } else if(pedido.getStatus() == SituacaoPedido.PEDIDO_PRONTO_RETIRADA){
-            evento = new PedidoPreparadoEvento(pedido);
-        } else if(pedido.getStatus() == SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA){
-            evento = new PedidoEntregaEmAndamentoEvento(pedido);
-        } else if(pedido.getStatus() == SituacaoPedido.PEDIDO_ENTREGUE){
-            evento = new PedidoEntregaConcluidaEvento(pedido);
-        }
-        return evento;
+        IPedidoEventoFactory factory = factories.get(pedido.getStatus());
+        return factory.criarEvento(pedido);
     }
 }

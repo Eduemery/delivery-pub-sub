@@ -1,6 +1,6 @@
 package delivery.model;
 
-public class CalculadoraPedido implements Calculadora{
+public class CalculadoraPedido implements ICalculadora {
 
     @Override
     public Double calcular(Pedido pedido){

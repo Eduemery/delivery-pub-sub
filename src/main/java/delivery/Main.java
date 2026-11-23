@@ -5,9 +5,9 @@ import delivery.model.Cliente;
 import delivery.model.Endereco;
 import delivery.model.Pedido;
 import delivery.model.Produto;
-import delivery.model.SituacaoPedido;
 import delivery.publisher.PedidoPublisher;
 import delivery.service.PedidoEventoService;
+import delivery.service.PedidoService;
 import delivery.subscriber.ClienteSubscriber;
 import delivery.subscriber.EntregadorSubscriber;
 import delivery.subscriber.RestauranteSubscriber;
@@ -38,18 +38,10 @@ public class Main {
         CalculadoraPedido calculadoraPedido = new CalculadoraPedido();
         pedido1.setValorTotal(calculadoraPedido.calcular(pedido1));
         PedidoEventoService pedidoEventoService = new PedidoEventoService();
+        PedidoService pedidoService = new PedidoService();
         System.out.println(pedido1.toString());
 
-
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
-        pedido1.setStatus(SituacaoPedido.PEDIDO_EM_PREPARACAO);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
-        pedido1.setStatus(SituacaoPedido.PEDIDO_PRONTO_RETIRADA);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
-        pedido1.setStatus(SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
-        pedido1.setStatus(SituacaoPedido.PEDIDO_ENTREGUE);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido1));
+        pedidoService.alterarSitucaoPedido(pedido1, publisher, pedidoEventoService);
         publisher.close();
 
         try {
