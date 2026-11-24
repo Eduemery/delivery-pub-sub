@@ -1,8 +1,8 @@
 package delivery.subscriber;
 
 import delivery.model.PedidoEvento;
-import delivery.model.TipoEvento;
-import delivery.service.PedidoService;
+import delivery.model.eNum.TipoEvento;
+import delivery.service.IPedidoService;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow.Subscriber;
@@ -11,9 +11,9 @@ import java.util.concurrent.Flow.Subscription;
 public class EntregadorSubscriber implements Subscriber<PedidoEvento> {
 
     private CountDownLatch latch;
-    private PedidoService pedidoService;
+    private IPedidoService pedidoService;
 
-    public EntregadorSubscriber(CountDownLatch latch, PedidoService pedidoService){
+    public EntregadorSubscriber(CountDownLatch latch, IPedidoService pedidoService){
         this.latch = latch;
         this.pedidoService = pedidoService;
     }
@@ -27,10 +27,19 @@ public class EntregadorSubscriber implements Subscriber<PedidoEvento> {
     public void onNext(PedidoEvento evento) {
         if(evento.getEvento() == TipoEvento.PREPARACAO_FINALIZADA){
             System.out.println("Entregador recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
-            pedidoService.buscarPedido();
+            pedidoService.entregarPedido(evento.getNumeroPedido());
         }
         if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
-            pedidoService.concluirEntrega();
+            /*try {
+                Thread.sleep(15000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }*/
+            pedidoService.concluirPedido(evento.getNumeroPedido());
+        }
+        if(evento.getEvento() == TipoEvento.CANCELAMENTO_PEDIDO){
+            System.out.println("Entregador recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }
 

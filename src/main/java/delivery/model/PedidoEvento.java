@@ -1,5 +1,7 @@
 package delivery.model;
 
+import delivery.model.eNum.TipoEvento;
+
 import java.time.LocalDateTime;
 
 public class PedidoEvento {

@@ -1,5 +1,7 @@
 package delivery.model;
 
+import delivery.model.eNum.TipoEvento;
+
 public class PedidoNovoEvento extends PedidoEvento{
 
     public PedidoNovoEvento(Pedido pedido){

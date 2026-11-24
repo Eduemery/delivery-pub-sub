@@ -1,10 +1,9 @@
 package delivery.publisher;
 
-import delivery.model.Ipublishers;
 import delivery.model.PedidoEvento;
 import java.util.concurrent.SubmissionPublisher;
 
-public class PedidoPublisher extends SubmissionPublisher<PedidoEvento> implements Ipublishers {
+public class PedidoPublisher extends SubmissionPublisher<PedidoEvento> implements IPublishers {
 
     public void publicarEvento(PedidoEvento evento){
         submit(evento);

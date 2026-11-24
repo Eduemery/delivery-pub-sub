@@ -1,9 +1,10 @@
 package delivery.subscriber;
 
 import delivery.model.PedidoEvento;
-import delivery.model.TipoEvento;
-import delivery.service.PedidoService;
+import delivery.model.eNum.TipoEvento;
+import delivery.service.IPedidoService;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
@@ -11,9 +12,9 @@ import java.util.concurrent.Flow.Subscription;
 public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
 
     private CountDownLatch latch;
-    private PedidoService pedidoService;
+    private IPedidoService pedidoService;
 
-    public RestauranteSubscriber(CountDownLatch latch, PedidoService pedidoService){
+    public RestauranteSubscriber(CountDownLatch latch, IPedidoService pedidoService){
         this.latch = latch;
         this.pedidoService = pedidoService;
     }
@@ -26,11 +27,25 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
     @Override
     public void onNext(PedidoEvento evento) {
         if(evento.getEvento() == TipoEvento.NOVO_PEDIDO){
+            Random random = new Random();
+            int a = random.nextInt(5);
             System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
-            pedidoService.aceitarPedido();
+            if(a == 0){
+                pedidoService.cancelarPedido(evento.getNumeroPedido());
+                System.out.println("Restaurante cancelou o pedido: " + " - " + evento.getHoraEvento());
+            }
+            else{
+                pedidoService.prepararPedido(evento.getNumeroPedido());
+            }
         }
         if(evento.getEvento() == TipoEvento.PEDIDO_ACEITO_RESTAURANTE){
-            pedidoService.concluirPrearacao();
+            /*try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }*/
+            pedidoService.retirarPedido(evento.getNumeroPedido());
         }
 
         if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
@@ -38,6 +53,9 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
         }
 
         if (evento.getEvento() == TipoEvento.ENTREGA_CONCLUIDA){
+            System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
+        }
+        if(evento.getEvento() == TipoEvento.CANCELAMENTO_PEDIDO){
             System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }

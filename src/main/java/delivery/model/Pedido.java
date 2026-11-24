@@ -1,5 +1,6 @@
 package delivery.model;
 
+import delivery.model.eNum.SituacaoPedido;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,14 +12,18 @@ public class Pedido {
     private Endereco enderecoEntrega;
     private List<Produto> itens;
     private SituacaoPedido status;
+    private Restaurante restaurante;
+    private Entregador entregador;
 
-    public Pedido(String numero, LocalDateTime emissao, Cliente cliente, Endereco enderecoEntrega, List<Produto> itens){
+    public Pedido(String numero, LocalDateTime emissao, Cliente cliente, Endereco enderecoEntrega, List<Produto> itens, Restaurante restaurante, Entregador entregador){
         this.numero = numero;
         this.emissao = emissao;
         this.cliente = cliente;
         this.enderecoEntrega = enderecoEntrega;
         this.itens = itens;
         this.status = SituacaoPedido.PEDIDO_REALIZADO;
+        this.restaurante = restaurante;
+        this.entregador = entregador;
     }
 
     public String getNumero(){
@@ -47,6 +52,15 @@ public class Pedido {
     }
     public void setValorTotal(Double valorTotal){
         this.valorTotal = valorTotal;
+    }
+    public Restaurante getRestaurante() {
+        return restaurante;
+    }
+    public Entregador getEntregador() {
+        return entregador;
+    }
+    public void setEntregador(Entregador entregador) {
+        this.entregador = entregador;
     }
 
     @Override

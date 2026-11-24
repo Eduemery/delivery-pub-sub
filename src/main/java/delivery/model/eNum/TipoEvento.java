@@ -1,9 +1,10 @@
-package delivery.model;
+package delivery.model.eNum;
 
 public enum TipoEvento {
     NOVO_PEDIDO,
     PEDIDO_ACEITO_RESTAURANTE,
     PREPARACAO_FINALIZADA,
     ENTREGA_EM_ANDAMENTO,
-    ENTREGA_CONCLUIDA
+    ENTREGA_CONCLUIDA,
+    CANCELAMENTO_PEDIDO
 }

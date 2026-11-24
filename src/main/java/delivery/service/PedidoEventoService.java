@@ -1,14 +1,15 @@
 package delivery.service;
 
 import delivery.model.Pedido;
-import delivery.model.PedidoAceitoEventoFactory;
-import delivery.model.PedidoEntregaConcluidaEventoFactory;
-import delivery.model.PedidoEntregaEmAndamentoEventoFactory;
+import delivery.model.factories.PedidoAceitoEventoFactory;
+import delivery.model.factories.PedidoCanceladoEventoFactory;
+import delivery.model.factories.PedidoEntregaConcluidaEventoFactory;
+import delivery.model.factories.PedidoEntregaEmAndamentoEventoFactory;
 import delivery.model.PedidoEvento;
-import delivery.model.IPedidoEventoFactory;
-import delivery.model.PedidoNovoEventoFactory;
-import delivery.model.PedidoPreparadoEventoFactory;
-import delivery.model.SituacaoPedido;
+import delivery.model.factories.IPedidoEventoFactory;
+import delivery.model.factories.PedidoNovoEventoFactory;
+import delivery.model.factories.PedidoPreparadoEventoFactory;
+import delivery.model.eNum.SituacaoPedido;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,10 @@ public class PedidoEventoService {
         factories.put(
                 SituacaoPedido.PEDIDO_ENTREGUE,
                 new PedidoEntregaConcluidaEventoFactory()
+        );
+        factories.put(
+                SituacaoPedido.PEDIDO_CANCELADO,
+                new PedidoCanceladoEventoFactory()
         );
     }
 

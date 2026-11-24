@@ -1,42 +1,104 @@
 package delivery.service;
 
-import delivery.model.Ipublishers;
+import delivery.model.eNum.SituacaoPedido;
+import delivery.publisher.IPublishers;
 import delivery.model.Pedido;
-import delivery.model.SituacaoPedido;
 
-public class PedidoService {
-    private Pedido pedido;
-    private Ipublishers publisher;
+import java.util.HashMap;
+import java.util.Map;
+
+public class PedidoService implements IPedidoService{
+    private Map<String, Pedido> pedidos;
+    private IPublishers publisher;
     private PedidoEventoService pedidoEventoService;
+    private int totalPedidos;
+    private boolean publicacaoEncerrada = false;
 
-    public PedidoService(Pedido pedido, Ipublishers publisher, PedidoEventoService pedidoEventoService){
-        this.pedido = pedido;
+    public PedidoService(IPublishers publisher, PedidoEventoService pedidoEventoService){
         this.publisher = publisher;
         this.pedidoEventoService = pedidoEventoService;
+        this.pedidos = new HashMap<>();
     }
 
-    public void novoPedido(){
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido));
+    public void putPedido(Pedido pedido){
+        pedidos.put(pedido.getNumero(), pedido);
     }
 
-    public void aceitarPedido(){
-        pedido.setStatus(SituacaoPedido.PEDIDO_EM_PREPARACAO);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido));
+    public synchronized void realizarPedido(String numeroPedido){
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_REALIZADO || pedidos.get(numeroPedido).getStatus() == SituacaoPedido.PEDIDO_CANCELADO)
+            return;
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedidos.get(numeroPedido)));
     }
 
-    public void concluirPrearacao(){
-        pedido.setStatus(SituacaoPedido.PEDIDO_PRONTO_RETIRADA);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido));
+    public synchronized void prepararPedido(String numeroPedido){
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_REALIZADO || pedidos.get(numeroPedido).getStatus() == SituacaoPedido.PEDIDO_CANCELADO)
+            return;
+        pedidos.get(numeroPedido).setStatus(SituacaoPedido.PEDIDO_EM_PREPARACAO);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedidos.get(numeroPedido)));
+    }
+    public synchronized void retirarPedido(String numeroPedido){
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_EM_PREPARACAO || pedidos.get(numeroPedido).getStatus() == SituacaoPedido.PEDIDO_CANCELADO)
+            return;
+        pedidos.get(numeroPedido).setStatus(SituacaoPedido.PEDIDO_PRONTO_RETIRADA);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedidos.get(numeroPedido)));
+    }
+    public synchronized void entregarPedido(String numeroPedido){
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_PRONTO_RETIRADA || pedidos.get(numeroPedido).getStatus() == SituacaoPedido.PEDIDO_CANCELADO)
+            return;
+        pedidos.get(numeroPedido).setStatus(SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA);
+        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedidos.get(numeroPedido)));
+    }
+    public synchronized void concluirPedido(String numeroPedido){
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA || pedidos.get(numeroPedido).getStatus() == SituacaoPedido.PEDIDO_CANCELADO)
+            return;
+        finalizarPedido(pedidos.get(numeroPedido), SituacaoPedido.PEDIDO_ENTREGUE);
+    }
+    public synchronized void cancelarPedido(String numeroPedido){
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_REALIZADO && pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA)
+            return;
+        finalizarPedido(pedidos.get(numeroPedido), SituacaoPedido.PEDIDO_CANCELADO);
     }
 
-    public void buscarPedido(){
-        pedido.setStatus(SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido));
+    public void definirTotalPedidos(int total){
+        this.totalPedidos = total;
     }
+    private synchronized void finalizarPedido(Pedido pedido, SituacaoPedido situacaoFinal) {
 
-    public void concluirEntrega(){
-        pedido.setStatus(SituacaoPedido.PEDIDO_ENTREGUE);
-        publisher.publicarEvento(pedidoEventoService.alterarEvento(pedido));
-        publisher.encerrarPublicacao();
+        Pedido pedidoAtual = pedidos.get(pedido.getNumero());
+
+        if (pedidoAtual == null) {
+            throw new IllegalArgumentException("Pedido não encontrado.");
+        }
+
+        if (pedidoAtual.getStatus() == SituacaoPedido.PEDIDO_ENTREGUE ||
+                pedidoAtual.getStatus() == SituacaoPedido.PEDIDO_CANCELADO) {
+            return;
+        }
+
+        pedidoAtual.setStatus(situacaoFinal);
+
+        publisher.publicarEvento(
+                pedidoEventoService.alterarEvento(pedidoAtual)
+        );
+
+        if (!publicacaoEncerrada && todosPedidosFinalizados()) {
+            publicacaoEncerrada = true;
+            System.out.println("Todos os pedidos foram finalizados.");
+            publisher.encerrarPublicacao();
+        }
+    }
+    public synchronized boolean todosPedidosFinalizados() {
+
+        if (pedidos.size() != totalPedidos || totalPedidos == 0) {
+            return false;
+        }
+
+        for (Pedido pedido : pedidos.values()) {
+            if (pedido.getStatus() != SituacaoPedido.PEDIDO_ENTREGUE &&
+                    pedido.getStatus() != SituacaoPedido.PEDIDO_CANCELADO) {
+                return false;
+            }
+        }
+        return true;
     }
 }

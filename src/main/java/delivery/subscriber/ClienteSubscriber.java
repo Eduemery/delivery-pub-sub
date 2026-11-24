@@ -1,9 +1,10 @@
 package delivery.subscriber;
 
 import delivery.model.PedidoEvento;
-import delivery.model.TipoEvento;
-import delivery.service.PedidoService;
+import delivery.model.eNum.TipoEvento;
+import delivery.service.IPedidoService;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
@@ -11,9 +12,11 @@ import java.util.concurrent.Flow.Subscription;
 public class ClienteSubscriber implements Subscriber<PedidoEvento> {
 
     private CountDownLatch latch;
+    private IPedidoService pedidoService;
 
-    public ClienteSubscriber(CountDownLatch latch){
+    public ClienteSubscriber(CountDownLatch latch, IPedidoService pedidoService){
         this.latch = latch;
+        this.pedidoService = pedidoService;
     }
 
     @Override
@@ -24,10 +27,25 @@ public class ClienteSubscriber implements Subscriber<PedidoEvento> {
     @Override
     public void onNext(PedidoEvento evento) {
         if(evento.getEvento() == TipoEvento.PEDIDO_ACEITO_RESTAURANTE){
+            Random random = new Random();
+            int a = random.nextInt(5);
             System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
+            if(a == 0){
+                pedidoService.cancelarPedido(evento.getNumeroPedido());
+                System.out.println("Cliente cancelou o pedido: " + " - " + evento.getHoraEvento());
+            }
         }
 
         if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
+            Random random2 = new Random();
+            int b = random2.nextInt(10);
+            System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
+            if(b == 0){
+                pedidoService.cancelarPedido(evento.getNumeroPedido());
+                System.out.println("Cliente cancelou o pedido: " + " - " + evento.getHoraEvento());
+            }
+        }
+        if(evento.getEvento() == TipoEvento.CANCELAMENTO_PEDIDO){
             System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }
