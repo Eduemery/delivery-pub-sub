@@ -27,12 +27,18 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
     @Override
     public void onNext(PedidoEvento evento) {
         if(evento.getEvento() == TipoEvento.NOVO_PEDIDO){
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
             Random random = new Random();
             int a = random.nextInt(5);
             System.out.println("Restaurante recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
             if(a == 0){
+                System.out.println("Restaurante cancelou o pedido: " + evento.getNumeroPedido() + " - " + evento.getHoraEvento());
                 pedidoService.cancelarPedido(evento.getNumeroPedido());
-                System.out.println("Restaurante cancelou o pedido: " + " - " + evento.getHoraEvento());
             }
             else{
                 pedidoService.prepararPedido(evento.getNumeroPedido());
@@ -40,7 +46,7 @@ public class RestauranteSubscriber implements Subscriber<PedidoEvento> {
         }
         if(evento.getEvento() == TipoEvento.PEDIDO_ACEITO_RESTAURANTE){
             /*try {
-                Thread.sleep(7000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;

@@ -10,7 +10,7 @@ MVP de um sistema de delivery desenvolvido em Java utilizando a arquitetura Publ
 
 
 
-Java 17 ou superior;
+Java 21 ou superior;
 
 
 

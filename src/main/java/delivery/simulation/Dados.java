@@ -11,6 +11,7 @@ import delivery.model.Restaurante;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Dados {
     private List<Restaurante> restaurantes;
@@ -37,10 +38,12 @@ public class Dados {
     public List<Entregador> getEntregadores(){
         return this.entregadores;
     }
-    public List<Pedido> criarPedidos(int quantidade){
-        if(quantidade < 1){
-            throw new IllegalArgumentException("A QUANTIDADE DE PEDIDOS A SEREM CRIADOS DEVE SER MAIOR QUE ZERO");
-        }
+    public List<Pedido> criarPedidos(){
+        Random random = new Random();
+        int quantidade = random.nextInt(10);
+        if(quantidade == 0)
+            quantidade = 1;
+
         CalculadoraPedido calculadoraPedido = new CalculadoraPedido();
         List<Pedido> pedidos = new ArrayList<>();
 
@@ -75,6 +78,7 @@ public class Dados {
             Pedido pedido = new Pedido(String.format("%03d", i + 1), LocalDateTime.now(), cliente, endereco, itens, restaurante, entregador);
             pedido.setValorTotal(calculadoraPedido.calcular(pedido));
             pedidos.add(pedido);
+            System.out.println(pedido.toString() + "\n");
         }
         return pedidos;
     }

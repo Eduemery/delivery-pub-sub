@@ -38,12 +38,19 @@ public class SimuladorPedido {
         publisher.subscribe(restauranteSubscriber);
         publisher.subscribe(entregadorSubscriber);
 
-        List<Pedido> pedidos = dadosPedido.criarPedidos(5);
+        List<Pedido> pedidos = dadosPedido.criarPedidos();
+
+        System.out.println("----------------------------------------START--------------------------------------");
         inicializador.iniciar(pedidos);
         try {
             latch.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+        System.out.println("----------------------------------------END----------------------------------------");
+
+        for(Pedido p : pedidos){
+            pedidoService.estadoFinalPedido(p);
         }
     }
 }

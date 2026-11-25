@@ -54,7 +54,7 @@ public class PedidoService implements IPedidoService{
         finalizarPedido(pedidos.get(numeroPedido), SituacaoPedido.PEDIDO_ENTREGUE);
     }
     public synchronized void cancelarPedido(String numeroPedido){
-        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_REALIZADO && pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_SAIU_PARA_ENTREGA)
+        if(pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_REALIZADO && pedidos.get(numeroPedido).getStatus() != SituacaoPedido.PEDIDO_EM_PREPARACAO)
             return;
         finalizarPedido(pedidos.get(numeroPedido), SituacaoPedido.PEDIDO_CANCELADO);
     }
@@ -83,7 +83,7 @@ public class PedidoService implements IPedidoService{
 
         if (!publicacaoEncerrada && todosPedidosFinalizados()) {
             publicacaoEncerrada = true;
-            System.out.println("Todos os pedidos foram finalizados.");
+            System.out.println("Todos os pedidos estão em seus estados finais");
             publisher.encerrarPublicacao();
         }
     }
@@ -100,5 +100,9 @@ public class PedidoService implements IPedidoService{
             }
         }
         return true;
+    }
+
+    public void estadoFinalPedido(Pedido pedido){
+        System.out.println("\n" + "PEDIDO: " + pedido.getNumero() + " | " + " SITUAÇÃO: " + pedido.getStatus() + "\n");
     }
 }

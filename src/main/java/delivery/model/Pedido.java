@@ -65,7 +65,6 @@ public class Pedido {
 
     @Override
     public String toString(){
-        return "Pedido: " + getNumero() + " no valor de: " + getValorTotal() + " criado em: " + getEmissao();
+        return "Pedido: " + getNumero() + " no valor de: " + getValorTotal() + " criado em: " + getEmissao() + " para o restaunte: " + getRestaurante().getNome();
     }
-
 }

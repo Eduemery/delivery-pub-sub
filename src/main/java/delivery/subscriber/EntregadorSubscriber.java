@@ -31,15 +31,12 @@ public class EntregadorSubscriber implements Subscriber<PedidoEvento> {
         }
         if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
             /*try {
-                Thread.sleep(15000);
+                Thread.sleep(7000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
             }*/
             pedidoService.concluirPedido(evento.getNumeroPedido());
-        }
-        if(evento.getEvento() == TipoEvento.CANCELAMENTO_PEDIDO){
-            System.out.println("Entregador recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
         }
     }
 

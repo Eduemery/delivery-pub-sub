@@ -31,19 +31,13 @@ public class ClienteSubscriber implements Subscriber<PedidoEvento> {
             int a = random.nextInt(5);
             System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
             if(a == 0){
+                System.out.println("Cliente cancelou o pedido: " + evento.getNumeroPedido() + " - " + evento.getHoraEvento());
                 pedidoService.cancelarPedido(evento.getNumeroPedido());
-                System.out.println("Cliente cancelou o pedido: " + " - " + evento.getHoraEvento());
             }
         }
 
         if(evento.getEvento() == TipoEvento.ENTREGA_EM_ANDAMENTO){
-            Random random2 = new Random();
-            int b = random2.nextInt(10);
             System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
-            if(b == 0){
-                pedidoService.cancelarPedido(evento.getNumeroPedido());
-                System.out.println("Cliente cancelou o pedido: " + " - " + evento.getHoraEvento());
-            }
         }
         if(evento.getEvento() == TipoEvento.CANCELAMENTO_PEDIDO){
             System.out.println("Cliente recebeu: " + evento.getMensagemEvento() + " - " + evento.getHoraEvento());
